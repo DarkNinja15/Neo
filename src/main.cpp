@@ -4,34 +4,8 @@
 #include <optional>
 #include <vector>
 
-#include <tokenization.hpp>
+#include <generation.hpp>
 using namespace std;
-
-string tokensToASM(const vector<Token> &tokens){
-    stringstream output;
-    output<<"global _start\n_start:\n";
-    for(int i=0;i<tokens.size();i++){
-        const Token token=tokens.at(i);
-        if(token.type==TokenType::_exit){
-            if(i+1<tokens.size() && tokens.at(i+1).type==TokenType::int_lit){
-                if(i+2<tokens.size() && tokens.at(i+2).type==TokenType::semi){
-                    output<<"    mov rax, 60\n";
-                    output<<"    mov rdi, "<<tokens.at(i+1).value.value()<<endl;
-                    output<<"    syscall"<<endl;
-                }
-                else{
-                    cerr<<"Expected ; after exit"<<endl;
-                    exit(EXIT_FAILURE);
-                }
-            }
-            else{
-                cerr<<"Expected int literal after exit"<<endl;
-                exit(EXIT_FAILURE);
-            }
-        }
-    }
-    return output.str();
-}
 
 int main(int argc, char* argv[]){
     if(argc!=2){
@@ -49,11 +23,20 @@ int main(int argc, char* argv[]){
 
     Tokenizer tokenizer(move(contents));
     vector<Token> tokens=tokenizer.tokenize();
-    string asmC = tokensToASM(tokens);
+
+    Parser parser(tokens);
+    optional<NodeExit> parseTree=parser.parse();
+
+    if(!parseTree.has_value()){
+        cerr<<"Invalid Syntax"<<endl;
+        exit(EXIT_FAILURE);
+    }
+
+    Generator generator(parseTree.value());
     
     {
         fstream output("out.asm",ios::out);
-        output<<asmC;
+        output<<generator.generate();
     }
 
     system("nasm -felf64 out.asm");
