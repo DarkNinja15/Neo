@@ -64,7 +64,7 @@ class Tokenizer{
 
     private:
         const string m_src;
-        int m_pos=0;
+        size_t m_pos=0;
 
         [[nodiscard]] inline optional<char> peek(int ahead=1) const{
             if(m_pos+ahead>m_src.length())
