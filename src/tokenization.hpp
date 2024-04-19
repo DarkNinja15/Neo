@@ -67,7 +67,7 @@ class Tokenizer{
         size_t m_pos=0;
 
         [[nodiscard]] inline optional<char> peek(int offset=0) const{
-            if(m_pos+offset>m_src.length())
+            if(m_pos+offset>=m_src.length())
                 return {};
             return m_src.at(m_pos+offset);
         }

@@ -56,7 +56,7 @@ class Parser{
         size_t m_pos=0;
 
         [[nodiscard]] inline optional<Token> peek(int offset=0) const{
-            if(m_pos+offset>m_tokens.size())
+            if(m_pos+offset>=m_tokens.size())
                 return {};
             return m_tokens.at(m_pos+offset);
         }
