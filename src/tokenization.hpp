@@ -66,10 +66,10 @@ class Tokenizer{
         const string m_src;
         size_t m_pos=0;
 
-        [[nodiscard]] inline optional<char> peek(int ahead=1) const{
-            if(m_pos+ahead>m_src.length())
+        [[nodiscard]] inline optional<char> peek(int offset=0) const{
+            if(m_pos+offset>m_src.length())
                 return {};
-            return m_src.at(m_pos);
+            return m_src.at(m_pos+offset);
         }
 
         inline char consume(){
