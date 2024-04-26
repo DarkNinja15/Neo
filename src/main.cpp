@@ -25,18 +25,18 @@ int main(int argc, char* argv[]){
     vector<Token> tokens=tokenizer.tokenize();
 
     Parser parser(tokens);
-    optional<NodeExit> parseTree=parser.parse();
+    optional<NodeProgram> prog=parser.parse_prog();
 
-    if(!parseTree.has_value()){
+    if(!prog.has_value()){
         cerr<<"Invalid Syntax"<<endl;
         exit(EXIT_FAILURE);
     }
 
-    Generator generator(parseTree.value());
+    Generator generator(prog.value());
     
     {
         fstream output("out.asm",ios::out);
-        output<<generator.generate();
+        output<<generator.gen_prog();
     }
 
     system("nasm -felf64 out.asm");

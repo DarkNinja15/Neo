@@ -6,7 +6,12 @@ using namespace std;
 enum class TokenType{
     _exit,
     int_lit,
-    semi
+    semi,
+    open_paren,
+    closed_paren,
+    identifier,
+    _let,
+    eq
 };
 
 struct Token
@@ -33,9 +38,13 @@ class Tokenizer{
                         tokens.push_back(Token{TokenType::_exit});
                         buff.clear();
                     }
+                    else if(buff=="let"){
+                        tokens.push_back(Token{TokenType::_let});
+                        buff.clear();
+                    }
                     else{
-                        cerr<<"Unknown token "<<buff<<endl;
-                        exit(EXIT_FAILURE);
+                        tokens.push_back(Token{TokenType::identifier,buff});
+                        buff.clear();
                     }
                 }
                 else if(isdigit(peek().value())){
@@ -46,15 +55,26 @@ class Tokenizer{
                     tokens.push_back(Token{TokenType::int_lit,buff});
                     buff.clear();
                 }
+                else if(peek().value()=='('){
+                    tokens.push_back(Token{TokenType::open_paren});
+                    consume();
+                }
+                else if(peek().value()==')'){
+                    tokens.push_back(Token{TokenType::closed_paren});
+                    consume();
+                }
                 else if(peek().value()==';'){
                     tokens.push_back(Token{TokenType::semi});
+                    consume();
+                }
+                else if(peek().value()=='='){
+                    tokens.push_back(Token{TokenType::eq});
                     consume();
                 }
                 else if(isspace(peek().value())){
                     consume();
                 }
                 else{
-                    
                     cerr<<"Unknown token "<<peek().value()<<endl;
                     exit(EXIT_FAILURE);
                 }
